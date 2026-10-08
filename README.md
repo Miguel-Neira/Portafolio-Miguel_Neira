@@ -416,3 +416,47 @@ CV y el portafolio, dejando solo "(Egresado)" como ya decía el CV original.
 No se detectó CSS duplicado sin usar dentro de este proyecto nuevo. Si en el futuro se reutilizan
 clases o componentes de los otros proyectos (EpicAnimes, GastroApp, etc.) dentro de este
 portafolio, se avisará antes de eliminar cualquier estilo que parezca no usarse, como se indicó.
+
+**Pendiente de revisión:** `public/icons.svg` es un archivo que vino por defecto del scaffold
+inicial de Vite y no se encontró ninguna referencia a él dentro de `src/` (se buscó con grep en
+todo el proyecto). Parece no usarse, pero no se eliminó — queda a la espera de que el usuario lo
+confirme, como se pidió.
+
+## Registro de errores y decisiones (sesión 2026-10-08)
+
+### 37. Portafolio subido a GitHub como repositorio privado
+**Pedido del usuario:** subir el código del portafolio a `https://github.com/Miguel-Neira/Portafolio-Miguel_Neira.git`
+como repositorio privado, sin que las carpetas de los demás proyectos (EpicAnimes, GASTROAPP,
+SB-Proyect-DJANGO, Eccomerce-Epicanimes-NoTerminado) quedaran incluidas.
+
+Como esas carpetas son **hermanas** de `portfolio-web/` (están al mismo nivel, no dentro de ella),
+bastó con inicializar el repositorio de Git directamente dentro de `portfolio-web/` en vez de en la
+carpeta raíz `Portafolio-Miguel_Neira/`. Así, Git nunca llega a "ver" el resto de las carpetas — ni
+falta excluirlas a mano ni hay riesgo de subirlas por error.
+
+Pasos realizados:
+```bash
+git init
+git add -A
+git commit -m "Initial commit: portafolio de Miguel Neira (React + Vite + Tailwind)"
+git branch -M main
+git remote add origin https://github.com/Miguel-Neira/Portafolio-Miguel_Neira.git
+git push -u origin main
+```
+
+Se verificó con `git ls-tree -r HEAD --name-only` que el único contenido subido corresponde a
+archivos dentro de `portfolio-web/` (incluyendo las imágenes y componentes de la recreación de
+GastroApp, que sí son parte del portafolio) — ninguna carpeta de los otros proyectos quedó
+incluida. El repositorio remoto ya existía vacío y configurado como privado por el usuario antes
+del push.
+
+### 38. Favicon nuevo (reemplaza el ícono por defecto de Vite)
+**Pedido del usuario:** usar una imagen propia (avatar pixel-art) como favicon — hasta ahora se
+había quedado el `favicon.svg` genérico que trae el scaffold de Vite por defecto.
+
+La imagen llegó como `.webp` de 1254×1254. Se convirtió a **PNG de 512×512** (con Pillow) en vez de
+usarla directamente como `.webp`, porque Safari (escritorio e iOS) todavía no soporta `.webp` como
+favicon — PNG funciona en todos los navegadores sin excepción. Se guardó como
+`public/favicon.png`, se actualizó el `<link rel="icon">` de `index.html` para apuntar a ella, y se
+eliminó el `favicon.svg` anterior (quedaba sin uso, reemplazado). Verificado sirviendo
+`http://localhost:5173/favicon.png` directamente en el navegador antes de subir el cambio.
